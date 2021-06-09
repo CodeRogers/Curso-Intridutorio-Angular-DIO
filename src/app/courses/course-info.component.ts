@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { Observable } from "rxjs";
 import { Course } from "./course";
 import { CourseService } from "./course.service";
 
@@ -15,11 +16,17 @@ export class CourseInfoComponent implements OnInit {
     }
     
     ngOnInit(): void {
-        this.course = this.courseService.retrieveById(Number.parseInt(this.activatedRoute.snapshot.paramMap.get('id') ?? '0')) ?? {} as Course;;
+        this.courseService.retrieveById(Number.parseInt(this.activatedRoute.snapshot.paramMap.get('id') ?? '0')).subscribe({
+            next: course => this.course = course,
+            error: erro => console.log('Erro: ', erro)
+        }) ?? {} as Course;;
     }
     
     save(): void {
-        this.courseService.save(this.course);
+        this.courseService.save(this.course).subscribe({
+            next: course => console.log('Saved: ', course),
+            error: erro => console.log('Erro: ', erro)
+        });
     }
     
 }
